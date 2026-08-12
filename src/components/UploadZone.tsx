@@ -196,7 +196,7 @@ export function UploadZone({ maxFileSizeMb }: { maxFileSizeMb: number }) {
           type="text"
           value={guestName}
           onChange={(event) => persistGuestName(event.target.value)}
-          placeholder="ex : Julie"
+          placeholder="ex : Nala"
           className="w-full rounded-full border border-sage-200 bg-white/70 px-4 py-2.5 font-sans text-sage-900 placeholder:text-sage-400 focus:border-sage-400 focus:outline-none focus:ring-2 focus:ring-sage-200"
         />
       </div>

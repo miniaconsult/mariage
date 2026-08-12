@@ -1,13 +1,13 @@
 // Personnalisez ici les informations affichées sur le site.
 export const siteConfig = {
   // Prénoms des mariés
-  coupleNames: "Camille & Antoine",
+  coupleNames: "Laura & Ayoub",
 
   // Date du mariage affichée sur la page (texte libre)
   weddingDate: "12 septembre 2026",
 
   // Titre affiché dans l'onglet du navigateur
-  browserTitle: "Camille & Antoine — Partagez vos photos",
+  browserTitle: "Laura & Ayoub — Partagez vos photos",
 
   // Message d'accueil
   welcomeMessage:
