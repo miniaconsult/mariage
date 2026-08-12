@@ -1,0 +1,11 @@
+[
+  {
+    "origin": [
+      "http://localhost:3000",
+      "https://votre-site.exemple.com"
+    ],
+    "method": ["PUT"],
+    "responseHeader": ["Content-Type", "x-goog-meta-guest-name"],
+    "maxAgeSeconds": 3600
+  }
+]

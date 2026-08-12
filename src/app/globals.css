@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+
+  /* Palette champêtre — vert sauge */
+  --sage-50: #f5f7f0;
+  --sage-100: #e9edde;
+  --sage-200: #d3dcbe;
+  --sage-300: #b6c69a;
+  --sage-400: #98ac78;
+  --sage-500: #7c9660;
+  --sage-600: #647a4c;
+  --sage-700: #50613e;
+  --sage-800: #414f33;
+  --sage-900: #37422c;
+
+  --cream: #fbf8f1;
+  --paper: #f3ecdc;
+  --clay: #c48a63;
+
+  --background: var(--cream);
+  --foreground: var(--sage-900);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-sage-50: var(--sage-50);
+  --color-sage-100: var(--sage-100);
+  --color-sage-200: var(--sage-200);
+  --color-sage-300: var(--sage-300);
+  --color-sage-400: var(--sage-400);
+  --color-sage-500: var(--sage-500);
+  --color-sage-600: var(--sage-600);
+  --color-sage-700: var(--sage-700);
+  --color-sage-800: var(--sage-800);
+  --color-sage-900: var(--sage-900);
+
+  --color-cream: var(--cream);
+  --color-paper: var(--paper);
+  --color-clay: var(--clay);
+
+  --font-display: var(--font-cormorant);
+  --font-script: var(--font-caveat);
+  --font-sans: var(--font-jost);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Texture papier douce en fond, façon carte de mariage */
+.paper-texture {
+  background-color: var(--cream);
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(124, 150, 96, 0.06) 0, transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(196, 138, 99, 0.06) 0, transparent 40%),
+    radial-gradient(circle at 50% 100%, rgba(124, 150, 96, 0.08) 0, transparent 50%);
+}
