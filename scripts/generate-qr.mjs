@@ -17,7 +17,7 @@ const outDir = path.resolve("qr-code");
 await mkdir(outDir, { recursive: true });
 
 const colors = {
-  dark: "#50613e", // vert sauge foncé
+  dark: "#597059", // vert sauge
   light: "#fbf8f100", // fond transparent
 };
 
