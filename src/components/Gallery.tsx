@@ -124,7 +124,7 @@ export function Gallery() {
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={item.url}
+                    src={item.thumbnailUrl}
                     alt=""
                     loading="lazy"
                     className="h-full w-full object-cover transition-transform group-hover:scale-105"
