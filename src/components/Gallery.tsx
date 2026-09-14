@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import type { GalleryItem } from "@/app/api/gallery/route";
 
+const BATCH_SIZE = 24;
+
 function formatDate(iso: string | null): string {
   if (!iso) return "";
   const date = new Date(iso);
@@ -14,23 +16,36 @@ function formatDate(iso: string | null): string {
   });
 }
 
+async function fetchPage(offset: number): Promise<{
+  items: GalleryItem[];
+  total: number;
+  hasMore: boolean;
+}> {
+  const response = await fetch(`/api/gallery?offset=${offset}&limit=${BATCH_SIZE}`, {
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error();
+  return response.json();
+}
+
 export function Gallery() {
   const [items, setItems] = useState<GalleryItem[]>([]);
+  const [total, setTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [loadingMore, setLoadingMore] = useState(false);
   const [selected, setSelected] = useState<GalleryItem | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
     let ignore = false;
 
-    fetch("/api/gallery", { cache: "no-store" })
-      .then((response) => {
-        if (!response.ok) throw new Error();
-        return response.json() as Promise<{ items: GalleryItem[] }>;
-      })
+    fetchPage(0)
       .then((data) => {
         if (!ignore) {
           setItems(data.items);
+          setTotal(data.total);
+          setHasMore(data.hasMore);
           setStatus("ready");
         }
       })
@@ -45,7 +60,22 @@ export function Gallery() {
 
   const refresh = () => {
     setStatus("loading");
+    setItems([]);
     setReloadToken((token) => token + 1);
+  };
+
+  const loadMore = async () => {
+    setLoadingMore(true);
+    try {
+      const data = await fetchPage(items.length);
+      setItems((prev) => [...prev, ...data.items]);
+      setTotal(data.total);
+      setHasMore(data.hasMore);
+    } catch {
+      // on laisse le bouton "Charger plus" pour réessayer
+    } finally {
+      setLoadingMore(false);
+    }
   };
 
   return (
@@ -53,11 +83,9 @@ export function Gallery() {
       <div className="mb-6 flex items-center justify-between">
         <p className="font-sans text-sm text-sage-600">
           {status === "ready" &&
-            (items.length === 0
+            (total === 0
               ? "Aucune photo pour l'instant."
-              : items.length === 1
-                ? "1 photo"
-                : `${items.length} photos`)}
+              : `${items.length} sur ${total} photo${total > 1 ? "s" : ""}`)}
         </p>
         <button
           onClick={refresh}
@@ -78,42 +106,56 @@ export function Gallery() {
       )}
 
       {status === "ready" && items.length > 0 && (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {items.map((item) => (
-            <button
-              key={item.name}
-              onClick={() => setSelected(item)}
-              className="group relative aspect-square overflow-hidden rounded-xl bg-sage-100"
-            >
-              {item.contentType.startsWith("video/") ? (
-                <video
-                  src={item.url}
-                  className="h-full w-full object-cover"
-                  muted
-                  preload="metadata"
-                />
-              ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={item.url}
-                  alt=""
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                />
-              )}
-              {item.contentType.startsWith("video/") && (
-                <span className="absolute inset-0 flex items-center justify-center text-3xl text-white drop-shadow">
-                  ▶
-                </span>
-              )}
-              {item.guestName && (
-                <span className="absolute bottom-1 left-1 rounded-full bg-black/50 px-2 py-0.5 font-sans text-[10px] text-white">
-                  {item.guestName}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+            {items.map((item) => (
+              <button
+                key={item.name}
+                onClick={() => setSelected(item)}
+                className="group relative aspect-square overflow-hidden rounded-xl bg-sage-100"
+              >
+                {item.contentType.startsWith("video/") ? (
+                  <video
+                    src={item.url}
+                    className="h-full w-full object-cover"
+                    muted
+                    preload="metadata"
+                  />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={item.url}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                  />
+                )}
+                {item.contentType.startsWith("video/") && (
+                  <span className="absolute inset-0 flex items-center justify-center text-3xl text-white drop-shadow">
+                    ▶
+                  </span>
+                )}
+                {item.guestName && (
+                  <span className="absolute bottom-1 left-1 rounded-full bg-black/50 px-2 py-0.5 font-sans text-[10px] text-white">
+                    {item.guestName}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {hasMore && (
+            <div className="mt-8 flex justify-center">
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="rounded-full border border-sage-300 px-6 py-2 font-sans text-sm text-sage-700 hover:bg-sage-100 disabled:opacity-50"
+              >
+                {loadingMore ? "Chargement…" : "Charger plus"}
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {selected && (
